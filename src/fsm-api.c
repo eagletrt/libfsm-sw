@@ -103,3 +103,7 @@ enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, void *data,
 
     return FSM_RC_INVALID_TRANSITION;
 }
+
+uint8_t fsm_api_get_state(struct FSMHandler *handler) {
+    return handler->current_state;
+}

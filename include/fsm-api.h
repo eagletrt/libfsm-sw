@@ -57,9 +57,11 @@ enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, void *data,
 /*!
  * \brief Function that returns the ID of the current state
  * 
+ * \param handler The pointer to the FSMHandler of the instance
+ * 
  * \returns uint8_t the ID of the current state
  * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
-uint8_t fsm_api_get_state(void);
+uint8_t fsm_api_get_state(struct FSMHandler *handler);
 
 #endif /* FSM_API_H */
