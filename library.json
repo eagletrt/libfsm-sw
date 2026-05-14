@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "description": "FSM library for embedded purposes!",
   "keywords": [
-    "FSM"
+    "FSM",
+    "Finite State Machine"
   ],
   "repository": {
     "type": "git",
@@ -20,7 +21,9 @@
   "license": "AGPL-3.0-only",
   "frameworks": "*",
   "platforms": "*",
-  "headers": [],
+  "headers": [
+    "include/timebase/fsm-api.h"
+  ],
   "examples": [],
   "export": {
     "include": [
