@@ -1,6 +1,6 @@
 /*!
  * \file fsm-api.h
- * \date 2024-05-07
+ * \date 2026-05-14
  * \author Alessandro Giustina [giustinalessandro@gmail.com]
  * \author Alessandro Bridi [ale.bridi15@gmail.com]
  * 
@@ -23,9 +23,9 @@
  * \param initial_state The initial state of the FSM
  * 
  * \retval FSM_RC_OK Initialization successful
- * \retval FSM_RC_ERROR An error occurred 
  * \retval FSM_RC_INVALID_MACHINE The FSM structure is invalid 
  * \retval FSM_RC_INVALID_STATE The given state is invalid
+ * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
 enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, struct State *state_list, uint8_t state_count, uint8_t initial_state);
 
@@ -38,6 +38,7 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, struct State *state_
  * \retval FSM_RC_OK The routine completed succesfully
  * \retval FSM_RC_ERROR An error occurred 
  * \retval FSM_RC_INVALID_TRANSITION The module attempted an invalid transition
+ * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
 enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data);
 
@@ -50,7 +51,7 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data);
  * \retval FSM_RC_OK The next state has been updated successfully
  * \retval FSM_RC_INVALID_TRANSITION The asked transition is not supported
  * \retval FSM_RC_INVALID_STATE The given state is invalid
- *  
+ * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
 enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t event_ID);
 
@@ -58,6 +59,7 @@ enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t eve
  * \brief Function that returns the ID of the current state
  * 
  * \returns uint8_t the ID of the current state
+ * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
 uint8_t fsm_api_get_state(void);
 
