@@ -32,21 +32,29 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, struct State *state_
 
         struct State state = state_list[i];
 
-        if (state.num_transitions == 0           /**/
-            || state.function == NULL            /**/
-            || state.next_default >= state_count /**/
-            || state.transitions == NULL         /**/
-            || state.num_transitions == 0        /**/
-            || state.id >= state_count           /**/
+        if ((state.num_transitions != 0 && state.transitions == NULL) /**/
+            || state.function == NULL                                 /**/
+            || state.next_default >= state_count                      /**/
+            || (state.num_transitions == 0 && state.repeat == false)  /**/
+            || state.id >= state_count                                /**/
             || state.id != i /**/) {
             return FSM_RC_INVALID_MACHINE;
         }
+
+        bool ok_next_default = false;
+
         for (int n = 0; n < state.num_transitions; n++) {
             struct Transition transition = state.transitions[n];
             if (transition.to >= state_count) {
                 return FSM_RC_INVALID_TRANSITION;
             }
+            if (transition.to == state.next_default) {
+                ok_next_default = true;
+            }
             state_list[transition.to].valid_state = true;
+        }
+        if (!ok_next_default && !state.repeat) {
+            return FSM_RC_INVALID_MACHINE;
         }
     }
 
@@ -61,6 +69,8 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, struct State *state_
             return FSM_RC_INVALID_MACHINE;
         }
     }
+
+    return FSM_RC_OK;
 }
 
 enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
@@ -87,6 +97,10 @@ enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, void *data,
     }
     if (state_ID >= handler->state_count) {
         return FSM_RC_INVALID_STATE;
+    }
+
+    if (state_ID == handler->current_state) {
+        return FSM_RC_OK;
     }
 
     struct State current_state = handler->machine_states[handler->current_state];

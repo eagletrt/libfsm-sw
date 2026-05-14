@@ -22,7 +22,7 @@
   "frameworks": "*",
   "platforms": "*",
   "headers": [
-    "include/timebase/fsm-api.h"
+    "include/fsm-api.h"
   ],
   "examples": [],
   "export": {
