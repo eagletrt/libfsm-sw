@@ -52,7 +52,7 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data);
  * \retval FSM_RC_INVALID_STATE The given state is invalid
  * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
-enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t state_ID);
+enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, void *data, uint8_t state_ID);
 
 /*!
  * \brief Function that returns the ID of the current state
