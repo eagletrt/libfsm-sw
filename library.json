@@ -1,19 +1,19 @@
 {
   "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
-  "name": "LibraryTemplate",
-  "version": "1.0.0",
-  "description": "Templates for libraries compatible with the PlatformIO ecosystem",
+  "name": "libfsm-sw",
+  "version": "0.1.0",
+  "description": "FSM library for embedded purposes!",
   "keywords": [
-    "template"
+    "FSM"
   ],
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/eagletrt/libfsm-sw"
   },
   "authors": [
     {
-      "name": "Antonio Gelain",
-      "email": "antonio.gelain2@gmail.com",
+      "name": "Alessandro Giustina",
+      "email": "giustinalessandro@gmail.com",
       "maintainer": true
     }
   ],

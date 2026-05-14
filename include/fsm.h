@@ -24,7 +24,7 @@ typedef void (*transition_function)(void *data);
 enum FSMReturnCode {
     FSM_RC_OK,                 /*!< Operation completed successfully */
     FSM_RC_ERROR,              /*!< An error occurred */
-    FSM_RC_INVALID_MACHINE,    /*!< The FSM instance is invalid */
+    FSM_RC_INVALID_MACHINE,    /*!< The FSM structure is invalid */
     FSM_RC_INVALID_STATE,      /*!< The specified state is invalid */
     FSM_RC_INVALID_TRANSITION, /*!< The specified transition is invalid */
 };
@@ -60,6 +60,7 @@ struct FSMHandler {
     uint8_t requested_state; /*!< The requested state to go to at the end of the current state*/
 
     State *machine_states; /*!< The states of the FSM*/
+    uint8_t state_count;   /*!< The number of states in the FSM*/
 };
 
 #endif /* FSM_H */
