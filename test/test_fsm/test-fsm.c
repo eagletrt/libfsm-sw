@@ -308,12 +308,49 @@ void test_fsm_run_state_repeat(void) {
 // Trigger event tests
 
 void test_fsm_trigger_event_null_handler(void) {
+    enum FSMReturnCode rc = fsm_api_trigger_event(NULL, NULL, STATE_1);
+
+    TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_NULL_POINTER, rc, "Expected FSM_RC_NULL_POINTER when handler is NULL");
 }
+
 void test_fsm_trigger_event_invalid_state(void) {
+    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, NULL, STATE_COUNT); // Invalid state ID
+
+    TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_INVALID_STATE, rc, "Expected FSM_RC_INVALID_STATE when state ID is invalid");
 }
+
 void test_fsm_trigger_event_invalid_transition(void) {
+    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, NULL, STATE_3); // No transition from state 0 to state 3
+
+    TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_INVALID_TRANSITION, rc, "Expected FSM_RC_INVALID_TRANSITION when there is no transition to the requested state from the current state");
 }
+
 void test_fsm_trigger_event_ok(void) {
+
+    handler.current_state = STATE_2; // Use a repeat state
+    handler.requested_state = STATE_2;
+
+    uint8_t data = 0;
+    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, &data, STATE_3);
+
+    TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_OK, rc, "Expected FSM_RC_OK when parameters are valid");
+    TEST_ASSERT_EQUAL_MESSAGE(1, transition_2_3_fake.call_count, "Expected transition function to be called once");
+    TEST_ASSERT_EQUAL_MESSAGE(&data, transition_2_3_fake.arg0_val, "Expected transition function to be called with correct data");
+    TEST_ASSERT_EQUAL_MESSAGE(STATE_3, handler.current_state, "Expected current state to be updated to the requested state");
+}
+
+void test_fsm_trigger_event_ok_overwrite_requested_state(void) {
+
+    handler.current_state = STATE_2;   // Use a repeat state
+    handler.requested_state = STATE_1; // Set requested state to a valid value different from the current state as would happen with a default state
+
+    uint8_t data = 0;
+    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, &data, STATE_3); // Transition from state 2 to state 3 should overwrite requested state
+
+    TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_OK, rc, "Expected FSM_RC_OK when parameters are valid");
+    TEST_ASSERT_EQUAL_MESSAGE(1, transition_2_3_fake.call_count, "Expected transition function to be called once");
+    TEST_ASSERT_EQUAL_MESSAGE(&data, transition_2_3_fake.arg0_val, "Expected transition function to be called with correct data");
+    TEST_ASSERT_EQUAL_MESSAGE(STATE_3, handler.current_state, "Expected current state to be updated to the requested state specified in the transition");
 }
 
 int main() {
@@ -338,5 +375,12 @@ int main() {
     RUN_TEST(test_fsm_run_state_null_handler);
     RUN_TEST(test_fsm_run_state_non_repeat);
     RUN_TEST(test_fsm_run_state_repeat);
+
+    // trigger event tests
+    RUN_TEST(test_fsm_trigger_event_null_handler);
+    RUN_TEST(test_fsm_trigger_event_invalid_state);
+    RUN_TEST(test_fsm_trigger_event_invalid_transition);
+    RUN_TEST(test_fsm_trigger_event_ok);
+    RUN_TEST(test_fsm_trigger_event_ok_overwrite_requested_state);
     UNITY_END();
 }
