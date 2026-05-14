@@ -418,5 +418,6 @@ STM32Make.make
 ### LOCAL IGNORE ###
 #in case git exclude is not used
 .local_gitignore
+platformio.ini
 
 ## ---------------- END MANUALLY ADDED ---------------- ##
