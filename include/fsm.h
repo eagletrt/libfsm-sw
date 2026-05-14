@@ -26,7 +26,6 @@ typedef void (*transition_function)(void *data);
  */
 enum FSMReturnCode {
     FSM_RC_OK,                 /*!< Operation completed successfully */
-    FSM_RC_ERROR,              /*!< An error occurred */
     FSM_RC_INVALID_MACHINE,    /*!< The FSM structure is invalid */
     FSM_RC_INVALID_STATE,      /*!< The specified state is invalid */
     FSM_RC_INVALID_TRANSITION, /*!< The specified transition is invalid */

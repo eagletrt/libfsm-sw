@@ -62,3 +62,44 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, struct State *state_
         }
     }
 }
+
+enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
+    if (handler == NULL) {
+        return FSM_RC_NULL_POINTER;
+    }
+
+    struct State current_state = handler->machine_states[handler->current_state];
+
+    // Set next state
+    if (!current_state.repeat) {
+        handler->requested_state = current_state.next_default;
+    }
+
+    // Run state
+    current_state.function(data);
+
+    return fsm_api_trigger_event(handler, data, handler->requested_state);
+}
+
+enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, void *data, uint8_t state_ID) {
+    if (handler == NULL) {
+        return FSM_RC_NULL_POINTER;
+    }
+    if (state_ID >= handler->state_count) {
+        return FSM_RC_INVALID_STATE;
+    }
+
+    struct State current_state = handler->machine_states[handler->current_state];
+
+    for (int i = 0; i < current_state.num_transitions; i++) {
+        if (current_state.transitions[i].to == state_ID) {
+            if (current_state.transitions[i].function != NULL) {
+                current_state.transitions[i].function(data);
+            }
+            handler->current_state = state_ID;
+            return FSM_RC_OK;
+        }
+    }
+
+    return FSM_RC_INVALID_TRANSITION;
+}

@@ -36,7 +36,6 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, struct State *state_
  * \param data The data to be passed to the state and to the transition function
  * 
  * \retval FSM_RC_OK The routine completed succesfully
- * \retval FSM_RC_ERROR An error occurred 
  * \retval FSM_RC_INVALID_TRANSITION The module attempted an invalid transition
  * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
@@ -46,14 +45,14 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data);
  * \brief Function to trigger a change of state in the FSM
  * 
  * \param handler The pointer to the FSMHandler of the instance
- * \param event_ID The ID of the state to transition to
+ * \param state_ID The ID of the state to transition to
  * 
  * \retval FSM_RC_OK The next state has been updated successfully
  * \retval FSM_RC_INVALID_TRANSITION The asked transition is not supported
  * \retval FSM_RC_INVALID_STATE The given state is invalid
  * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
-enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t event_ID);
+enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t state_ID);
 
 /*!
  * \brief Function that returns the ID of the current state
