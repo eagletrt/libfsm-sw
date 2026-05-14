@@ -42,7 +42,8 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, struct State *state_
 enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data);
 
 /*!
- * \brief Function to trigger a change of state in the FSM
+ * \brief Function to trigger a change of state in the FSM, this will take place at the 
+ * end of the current state execution, if the transition is valid
  * 
  * \param handler The pointer to the FSMHandler of the instance
  * \param state_ID The ID of the state to transition to
@@ -52,15 +53,14 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data);
  * \retval FSM_RC_INVALID_STATE The given state is invalid
  * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
-enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, void *data, uint8_t state_ID);
+enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t state_ID);
 
 /*!
  * \brief Function that returns the ID of the current state
  * 
  * \param handler The pointer to the FSMHandler of the instance
  * 
- * \returns uint8_t the ID of the current state
- * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
+ * \returns uint8_t the ID of the current state, 0 also if the handler is NULL
  */
 uint8_t fsm_api_get_state(struct FSMHandler *handler);
 

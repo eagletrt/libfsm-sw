@@ -1,5 +1,5 @@
 /*!
- * \file test-timebase.c
+ * \file test-fsm.c
  * \date 2026-05-14
  * \author Alessandro Giustina [giustinalessandro@gmail.com]
  *
@@ -101,13 +101,6 @@ void setUp(void) {
 void tearDown(void) {
 }
 
-void invalidate_states(void) {
-    default_states[0].valid_state = false;
-    default_states[1].valid_state = false;
-    default_states[2].valid_state = false;
-    default_states[3].valid_state = false;
-}
-
 // Initialization tests
 
 void test_fsm_init_null_handler(void) {
@@ -125,15 +118,11 @@ void test_fsm_init_null_state_list(void) {
 
 void test_fsm_init_invalid_state_count(void) {
 
-    invalidate_states();
-
     enum FSMReturnCode rc = fsm_api_init(&handler, default_states, 1, STATE_0);
     TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_INVALID_MACHINE, rc, "Expected FSM_RC_INVALID_MACHINE when state count is less than or equal to 1");
 }
 
 void test_fsm_init_invalid_initial_state(void) {
-
-    invalidate_states();
 
     enum FSMReturnCode rc = fsm_api_init(&handler, default_states, STATE_COUNT, STATE_COUNT); // Invalid initial state ID
 
@@ -141,8 +130,6 @@ void test_fsm_init_invalid_initial_state(void) {
 }
 
 void test_fsm_init_null_state_function(void) {
-
-    invalidate_states();
 
     struct State invalid_state[STATE_COUNT] = {};
     memcpy(invalid_state, default_states, sizeof(default_states));
@@ -155,8 +142,6 @@ void test_fsm_init_null_state_function(void) {
 
 void test_fsm_init_invalid_next_default_state(void) {
 
-    invalidate_states();
-
     struct State invalid_state[STATE_COUNT] = {};
     memcpy(invalid_state, default_states, sizeof(default_states));
     invalid_state[1].next_default = STATE_COUNT; // Invalid state ID
@@ -167,8 +152,6 @@ void test_fsm_init_invalid_next_default_state(void) {
 }
 
 void test_fsm_init_invalid_next_default_state_not_in_transitions(void) {
-
-    invalidate_states();
 
     struct State invalid_state[STATE_COUNT] = {};
     memcpy(invalid_state, default_states, sizeof(default_states));
@@ -181,8 +164,6 @@ void test_fsm_init_invalid_next_default_state_not_in_transitions(void) {
 
 void test_fsm_init_null_state_transitions_pointer(void) {
 
-    invalidate_states();
-
     struct State invalid_state[STATE_COUNT] = {};
     memcpy(invalid_state, default_states, sizeof(default_states));
     invalid_state[1].transitions = NULL;
@@ -193,8 +174,6 @@ void test_fsm_init_null_state_transitions_pointer(void) {
 }
 
 void test_fsm_init_invalid_state_ID(void) {
-
-    invalidate_states();
 
     struct State invalid_state[STATE_COUNT] = {};
     memcpy(invalid_state, default_states, sizeof(default_states));
@@ -207,8 +186,6 @@ void test_fsm_init_invalid_state_ID(void) {
 
 void test_fsm_init_non_consecutive_ID(void) {
 
-    invalidate_states();
-
     struct State invalid_state[STATE_COUNT] = {};
     memcpy(invalid_state, default_states, sizeof(default_states));
     invalid_state[1].id = 5; // Non-consecutive state ID
@@ -219,8 +196,6 @@ void test_fsm_init_non_consecutive_ID(void) {
 }
 
 void test_fsm_init_invalid_transition_ID(void) {
-
-    invalidate_states();
 
     struct State invalid_state[STATE_COUNT] = {};
     memcpy(invalid_state, default_states, sizeof(default_states));
@@ -234,26 +209,7 @@ void test_fsm_init_invalid_transition_ID(void) {
     invalid_state[1].transitions[0].to = STATE_2;
 }
 
-void test_fsm_init_isolated_state(void) {
-
-    invalidate_states();
-
-    struct State invalid_state[STATE_COUNT] = {};
-    memcpy(invalid_state, default_states, sizeof(default_states));
-    // State 2 is isolated because no transition leads to it and it's not the initial state
-    invalid_state[1].transitions[0].to = STATE_3; // Remove transition to state 2
-
-    enum FSMReturnCode rc = fsm_api_init(&handler, invalid_state, STATE_COUNT, STATE_0);
-
-    TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_INVALID_MACHINE, rc, "Expected FSM_RC_INVALID_MACHINE when there is an isolated state");
-
-    //Reset transition to valid value for subsequent tests
-    invalid_state[1].transitions[0].to = STATE_2;
-}
-
 void test_fsm_init_invalid_repeat_state(void) {
-
-    invalidate_states();
 
     struct State invalid_state[STATE_COUNT] = {};
     memcpy(invalid_state, default_states, sizeof(default_states));
@@ -265,8 +221,6 @@ void test_fsm_init_invalid_repeat_state(void) {
 }
 
 void test_fsm_init_ok_parameters(void) {
-
-    invalidate_states();
 
     enum FSMReturnCode rc = fsm_api_init(&handler, default_states, STATE_COUNT, STATE_0);
 
@@ -303,24 +257,37 @@ void test_fsm_run_state_repeat(void) {
     TEST_ASSERT_EQUAL_MESSAGE(1, routine_2_fake.call_count, "Expected state function to be called once");
     TEST_ASSERT_EQUAL_MESSAGE(&data, routine_2_fake.arg0_val, "Expected state function to be called with correct data");
     TEST_ASSERT_EQUAL_MESSAGE(STATE_2, handler.requested_state, "Expected requested state to be updated to the state specified in the transition");
-};
+}
+
+void test_fsm_run_state_with_null_transition_function(void) {
+    handler.current_state = STATE_1; // State 1 has a transition with a NULL function
+    handler.requested_state = STATE_1;
+
+    uint8_t data = 0;
+    enum FSMReturnCode rc = fsm_api_run_state(&handler, &data);
+
+    TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_OK, rc, "Expected FSM_RC_OK when parameters are valid");
+    TEST_ASSERT_EQUAL_MESSAGE(1, routine_1_fake.call_count, "Expected state function to be called once");
+    TEST_ASSERT_EQUAL_MESSAGE(&data, routine_1_fake.arg0_val, "Expected state function to be called with correct data");
+    TEST_ASSERT_EQUAL_MESSAGE(STATE_2, handler.requested_state, "Expected requested state to be updated to the state specified in the transition even if the transition function is NULL");
+}
 
 // Trigger event tests
 
 void test_fsm_trigger_event_null_handler(void) {
-    enum FSMReturnCode rc = fsm_api_trigger_event(NULL, NULL, STATE_1);
+    enum FSMReturnCode rc = fsm_api_trigger_event(NULL, STATE_1);
 
     TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_NULL_POINTER, rc, "Expected FSM_RC_NULL_POINTER when handler is NULL");
 }
 
 void test_fsm_trigger_event_invalid_state(void) {
-    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, NULL, STATE_COUNT); // Invalid state ID
+    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, STATE_COUNT); // Invalid state ID
 
     TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_INVALID_STATE, rc, "Expected FSM_RC_INVALID_STATE when state ID is invalid");
 }
 
 void test_fsm_trigger_event_invalid_transition(void) {
-    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, NULL, STATE_3); // No transition from state 0 to state 3
+    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, STATE_3); // No transition from state 0 to state 3
 
     TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_INVALID_TRANSITION, rc, "Expected FSM_RC_INVALID_TRANSITION when there is no transition to the requested state from the current state");
 }
@@ -330,27 +297,21 @@ void test_fsm_trigger_event_ok(void) {
     handler.current_state = STATE_2; // Use a repeat state
     handler.requested_state = STATE_2;
 
-    uint8_t data = 0;
-    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, &data, STATE_3);
+    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, STATE_3);
 
     TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_OK, rc, "Expected FSM_RC_OK when parameters are valid");
-    TEST_ASSERT_EQUAL_MESSAGE(1, transition_2_3_fake.call_count, "Expected transition function to be called once");
-    TEST_ASSERT_EQUAL_MESSAGE(&data, transition_2_3_fake.arg0_val, "Expected transition function to be called with correct data");
     TEST_ASSERT_EQUAL_MESSAGE(STATE_3, handler.current_state, "Expected current state to be updated to the requested state");
 }
 
-void test_fsm_trigger_event_ok_overwrite_requested_state(void) {
+void test_fsm_trigger_event_ok_same_state(void) {
 
-    handler.current_state = STATE_2;   // Use a repeat state
-    handler.requested_state = STATE_1; // Set requested state to a valid value different from the current state as would happen with a default state
+    handler.current_state = STATE_2; // Use a repeat state
+    handler.requested_state = STATE_2;
 
-    uint8_t data = 0;
-    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, &data, STATE_3); // Transition from state 2 to state 3 should overwrite requested state
+    enum FSMReturnCode rc = fsm_api_trigger_event(&handler, STATE_2);
 
     TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_OK, rc, "Expected FSM_RC_OK when parameters are valid");
-    TEST_ASSERT_EQUAL_MESSAGE(1, transition_2_3_fake.call_count, "Expected transition function to be called once");
-    TEST_ASSERT_EQUAL_MESSAGE(&data, transition_2_3_fake.arg0_val, "Expected transition function to be called with correct data");
-    TEST_ASSERT_EQUAL_MESSAGE(STATE_3, handler.current_state, "Expected current state to be updated to the requested state specified in the transition");
+    TEST_ASSERT_EQUAL_MESSAGE(STATE_2, handler.current_state, "Expected current state to remain the same when triggering an event to the same state");
 }
 
 int main() {
@@ -367,7 +328,6 @@ int main() {
     RUN_TEST(test_fsm_init_invalid_state_ID);
     RUN_TEST(test_fsm_init_non_consecutive_ID);
     RUN_TEST(test_fsm_init_invalid_transition_ID);
-    RUN_TEST(test_fsm_init_isolated_state);
     RUN_TEST(test_fsm_init_invalid_repeat_state);
     RUN_TEST(test_fsm_init_ok_parameters);
 
@@ -375,12 +335,13 @@ int main() {
     RUN_TEST(test_fsm_run_state_null_handler);
     RUN_TEST(test_fsm_run_state_non_repeat);
     RUN_TEST(test_fsm_run_state_repeat);
+    RUN_TEST(test_fsm_run_state_with_null_transition_function);
 
     // trigger event tests
     RUN_TEST(test_fsm_trigger_event_null_handler);
     RUN_TEST(test_fsm_trigger_event_invalid_state);
     RUN_TEST(test_fsm_trigger_event_invalid_transition);
     RUN_TEST(test_fsm_trigger_event_ok);
-    RUN_TEST(test_fsm_trigger_event_ok_overwrite_requested_state);
+    RUN_TEST(test_fsm_trigger_event_ok_same_state);
     UNITY_END();
 }
