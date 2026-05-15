@@ -1,57 +1,80 @@
-# LIBSTM32-SW-TEMPLATE
+# libfsm-sw
+A lightweight, event-driven finite state machine library for embedded C applications.
 
-This repository serves as a template for libraries compatible with the
-[PlatformIO ecosystem](https://docs.platformio.org/en/latest/librarymanager/creating.html).
+---
+# Core Concepts
 
-## Usage
+## State
 
-Before starting to develop the library, a couple of things need to be done:
-1. Change this README explaining the library and the functionalities that it offers
-2. Modify the `library.json` including:
-    - The **name** of the library
-    - The library **version**
-    - The **description** explaining what the library does and for which devices
-    - The list of **keywords**
-    - The repository **url** (and type if necessary)
-    - The list of **authors**
-    - The supported **frameworks** and **platforms** (if needed)
-    - The list of **header files** of the library
-    - The list of **examples**
-    - The file of the library to **export** (if needed)
-3. Modify the `Doxyfile`:
-    - change the `PROJECT_NAME` to the name of the library
-    - change the `VERSION` to the version of the library
+A state contains:
 
-## Structure
+* An identifier
+* A routine function
+* A default next state
+* A transition table
+* A repeat mode
 
-The code of the library should be splitted in sources which must be placed inside
-the `src` folder and headers which must be placed inside the `include` folder.
+Example:
 
-Inside the `example` folder multiple source files should be placed to further
-explain how to use the library and how it works in different scenario.
-
-The library must be tested with the maximum possible code coverage, the source
-code used to run the unit tests should be put inside the `test` folder.
-
-If scripts or other tools are needed for the library they must be put inside
-the `tools` folder.
-
-No other folders should be created besides the ones described before if not
-necessary, to handle complex file structures nested folders can be used.
-
-For more info check the READMEs inside the corresponding folders.
-
-## Git Hooks
-
-To setup git hooks in your local repository you will have to execute the following commands:
-```sh
-cd <library-name>
+```c
+struct State {
+    uint32_t id;
+    void (*function)(void *data);
+    bool repeat;
+    uint32_t next_default;
+    struct Transition *transitions;
+    uint32_t num_transitions;
+};
 ```
 
-```sh
-chmod +x hooks/pre-commit
+---
+
+## Transition
+
+A transition defines a valid move from one state to another.
+
+Example:
+
+```c
+struct Transition {
+    uint32_t to;
+    void (*function)(void *data);
+};
 ```
 
-```sh
-git config core.hooksPath hooks/
+---
+
+# State Execution Model
+
+Each call to:
+
+```c
+fsm_api_run_state(&handler, user_data);
 ```
+
+performs the following:
+
+1. Executes the current state's routine
+2. Checks for pending triggered events
+3. Executes transition callback (if present)
+4. Changes state accordingly
+5. Handles automatic progression for non-repeat states
+
+---
+
+## Repeat State
+
+A repeating state remains active until an event triggers another transition.
+
+A non-repeating state automatically advances to its `next_default` state after execution.
+
+## Triggering Events
+
+Events can be triggered to request a state change:
+```c
+fsm_api_trigger_event(&handler, target_state_id);
+```
+The library checks if the transition is valid based on the current state and its transition table, then updates the requested state accordingly. Once the current state routine finishes executing, the library will check for any pending requested state changes and update the current state if necessary.
+
+---
+
