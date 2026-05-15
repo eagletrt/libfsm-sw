@@ -6,7 +6,7 @@
  * \brief Implementation of the Finite State Machine
  */
 
-#include "fsm-api.h"
+#include "eagletrt-fsm-api.h"
 
 enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *state_list, uint8_t state_count, uint8_t initial_state) {
     if (handler == NULL || state_list == NULL) {
@@ -92,23 +92,23 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
     return FSM_RC_INVALID_TRANSITION;
 }
 
-enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t state_ID) {
+enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t state_id) {
     if (handler == NULL) {
         return FSM_RC_NULL_POINTER;
     }
-    if (state_ID >= handler->state_count) {
+    if (state_id >= handler->state_count) {
         return FSM_RC_INVALID_STATE;
     }
 
-    if (state_ID == handler->requested_state) {
+    if (state_id == handler->requested_state) {
         return FSM_RC_OK;
     }
 
     const struct State current_state = handler->machine_states[handler->current_state];
 
     for (uint8_t i = 0; i < current_state.num_transitions; i++) {
-        if (current_state.transitions[i].to == state_ID) {
-            handler->requested_state = state_ID;
+        if (current_state.transitions[i].to == state_id) {
+            handler->requested_state = state_id;
             return FSM_RC_OK;
         }
     }

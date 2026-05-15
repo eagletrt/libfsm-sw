@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "fsm-api.h"
+#include "eagletrt-fsm-api.h"
 
 void routine_idle(void *data) {
     printf("Idle");
@@ -79,7 +79,7 @@ struct State states[] = {
         .repeat = true,
         .next_default = STATE_WORKING,
         .transitions = idle_transitions,
-        .num_transitions = FSM_TRANSITION_LEN(idle_transitions),
+        .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(idle_transitions),
     },
     {
         .id = STATE_WORKING,
@@ -87,7 +87,7 @@ struct State states[] = {
         .repeat = true,
         .next_default = STATE_DONE,
         .transitions = working_transitions,
-        .num_transitions = FSM_TRANSITION_LEN(working_transitions),
+        .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(working_transitions),
     },
     {
         .id = STATE_FAULT,
@@ -95,7 +95,7 @@ struct State states[] = {
         .repeat = false,
         .next_default = STATE_IDLE,
         .transitions = fault_transitions,
-        .num_transitions = FSM_TRANSITION_LEN(fault_transitions),
+        .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(fault_transitions),
     },
     {
         .id = STATE_DONE,
@@ -103,7 +103,7 @@ struct State states[] = {
         .repeat = false,
         .next_default = STATE_IDLE,
         .transitions = done_transitions,
-        .num_transitions = FSM_TRANSITION_LEN(done_transitions),
+        .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(done_transitions),
     },
 };
 

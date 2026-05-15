@@ -1,5 +1,5 @@
 /*!
- * \file fsm.h
+ * \file eagletrt-fsm.h
  * \date 2026-05-14
  * \author Alessandro Giustina [giustinalessandro@gmail.com]
  * \author Alessandro Bridi [ale.bridi15@gmail.com]
@@ -7,18 +7,26 @@
  * \brief Finite State Machine implementation
  */
 
-#ifndef FSM_H
-#define FSM_H
+#ifndef EAGLETRT_FSM_H
+#define EAGLETRT_FSM_H
 
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdbool.h>
 
-/*! \brief Type definition for a state function */
+/*! 
+ * \brief Type definition for a state function 
+ *
+ * \param data A pointer to user-defined data that can be passed to the state function.
+ */
 typedef void (*state_function)(void *data);
 
-/*! \brief Type definition for a transition function */
+/*! 
+ * \brief Type definition for a transition function
+ *
+ * \param data A pointer to user-defined data that can be passed to the transition function.
+ */
 typedef void (*transition_function)(void *data);
 
 /*!
@@ -73,6 +81,6 @@ struct FSMHandler {
  * \brief Macro to determine transition array length
  * \warning Please make sure that the array has not decayed to a pointer before using this funciton
  */
-#define FSM_TRANSITION_LEN(a) (sizeof(a) / sizeof(struct Transition))
+#define EAGLETRT_FSM_TRANSITION_LEN(a) (sizeof(a) / sizeof(struct Transition))
 
-#endif /* FSM_H */
+#endif /* EAGLETRT_FSM_H */

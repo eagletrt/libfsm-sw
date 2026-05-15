@@ -1,5 +1,5 @@
 /*!
- * \file fsm-api.h
+ * \file eagletrt-fsm-api.h
  * \date 2026-05-14
  * \author Alessandro Giustina [giustinalessandro@gmail.com]
  * \author Alessandro Bridi [ale.bridi15@gmail.com]
@@ -7,10 +7,10 @@
  * \brief Finite State Machine public facing API
  */
 
-#ifndef FSM_API_H
-#define FSM_API_H
+#ifndef EAGLETRT_FSM_API_H
+#define EAGLETRT_FSM_API_H
 
-#include "fsm.h"
+#include "eagletrt-fsm.h"
 
 /*!
  * \brief Initialization function for the FSM module
@@ -64,4 +64,4 @@ enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t sta
  */
 uint8_t fsm_api_get_state(const struct FSMHandler *handler);
 
-#endif /* FSM_API_H */
+#endif /* EAGLETRT_FSM_API_H */

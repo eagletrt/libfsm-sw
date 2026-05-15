@@ -7,7 +7,7 @@
  */
 
 #include "unity.h"
-#include "fsm-api.h"
+#include "eagletrt-fsm-api.h"
 #include "fff.h"
 DEFINE_FFF_GLOBALS;
 
@@ -56,7 +56,7 @@ struct State default_states[] = {
         .repeat = false,
         .next_default = STATE_1,
         .transitions = state_0_transitions,
-        .num_transitions = FSM_TRANSITION_LEN(state_0_transitions),
+        .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(state_0_transitions),
     },
     {
         .id = STATE_1,
@@ -64,7 +64,7 @@ struct State default_states[] = {
         .repeat = false,
         .next_default = STATE_2,
         .transitions = state_1_transitions,
-        .num_transitions = FSM_TRANSITION_LEN(state_1_transitions),
+        .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(state_1_transitions),
     },
     {
         .id = STATE_2,
@@ -72,7 +72,7 @@ struct State default_states[] = {
         .repeat = true,
         .next_default = 0, // Ignored for repeat states
         .transitions = state_2_transitions,
-        .num_transitions = FSM_TRANSITION_LEN(state_2_transitions),
+        .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(state_2_transitions),
     },
     {
         .id = STATE_3,
