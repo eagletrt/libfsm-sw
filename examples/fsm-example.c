@@ -76,23 +76,20 @@ struct State states[] = {
     {
         .id = STATE_IDLE,
         .function = routine_idle,
-        .repeat = true,
-        .next_default = STATE_WORKING,
+        .next_default = STATE_IDLE, // This is a repeat state
         .transitions = idle_transitions,
         .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(idle_transitions),
     },
     {
         .id = STATE_WORKING,
         .function = routine_working,
-        .repeat = true,
-        .next_default = STATE_DONE,
+        .next_default = STATE_WORKING, // This is a repeat state
         .transitions = working_transitions,
         .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(working_transitions),
     },
     {
         .id = STATE_FAULT,
         .function = routine_fault,
-        .repeat = false,
         .next_default = STATE_IDLE,
         .transitions = fault_transitions,
         .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(fault_transitions),
@@ -100,7 +97,6 @@ struct State states[] = {
     {
         .id = STATE_DONE,
         .function = routine_done,
-        .repeat = false,
         .next_default = STATE_IDLE,
         .transitions = done_transitions,
         .num_transitions = EAGLETRT_FSM_TRANSITION_LEN(done_transitions),
