@@ -35,8 +35,8 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *
 
         bool ok_next_default = false;
 
-        for (uint8_t n = 0; n < state.num_transitions; n++) {
-            const struct Transition transition = state.transitions[n];
+        for (uint8_t iter = 0; iter < state.num_transitions; iter++) {
+            const struct Transition transition = state.transitions[iter];
             if (transition.to >= state_count) {
                 return FSM_RC_INVALID_TRANSITION;
             }
