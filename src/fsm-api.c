@@ -19,14 +19,6 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *
         return FSM_RC_INVALID_STATE;
     }
 
-    // Fill handler
-    memset(handler, 0, sizeof(*handler));
-
-    handler->current_state = initial_state;
-    handler->requested_state = initial_state;
-    handler->state_count = state_count;
-    handler->machine_states = state_list;
-
     // Validate machine
     for (uint8_t i = 0; i < state_count; i++) {
 
@@ -57,6 +49,14 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *
         }
     }
 
+    // Fill handler
+    memset(handler, 0, sizeof(*handler));
+
+    handler->current_state = initial_state;
+    handler->requested_state = initial_state;
+    handler->state_count = state_count;
+    handler->machine_states = state_list;
+
     return FSM_RC_OK;
 }
 
@@ -68,7 +68,7 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
     const struct State current_state = handler->machine_states[handler->current_state];
 
     // Set next state
-    if (!current_state.repeat) {
+    if (!current_state.repeat && handler->requested_state == handler->current_state) { // What should the behavior be here, should it discard any trigger state made in between the end of the routine and this line or not ??
         handler->requested_state = current_state.next_default;
     }
 
@@ -100,7 +100,7 @@ enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t sta
         return FSM_RC_INVALID_STATE;
     }
 
-    if (state_ID == handler->current_state) {
+    if (state_ID == handler->requested_state) {
         return FSM_RC_OK;
     }
 

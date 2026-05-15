@@ -27,7 +27,7 @@
  * \retval FSM_RC_INVALID_STATE The given state is invalid
  * \retval FSM_RC_NULL_POINTER The function recieved a null pointer
  */
-enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, struct State *state_list, uint8_t state_count, uint8_t initial_state);
+enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *state_list, uint8_t state_count, uint8_t initial_state);
 
 /*!
  * \brief Routine for the FSM
@@ -62,6 +62,6 @@ enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t sta
  * 
  * \returns uint8_t the ID of the current state, 0 also if the handler is NULL
  */
-uint8_t fsm_api_get_state(struct FSMHandler *handler);
+uint8_t fsm_api_get_state(const struct FSMHandler *handler);
 
 #endif /* FSM_API_H */

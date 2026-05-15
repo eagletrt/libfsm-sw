@@ -49,7 +49,7 @@ struct State {
     uint8_t id;              /*!< The ID of the state*/
     state_function function; /*!< The function to be run at the state*/
     bool repeat;             /*!< Whether the state should be repeated until a transition is triggered or not*/
-    uint8_t next_default;    /*!< The default next state, unused for repeat states*/
+    uint8_t next_default;    /*!< The default next state, unused for repeat states, this is the state to go to if no transition is triggered*/
 
     struct Transition *transitions; /*!< The transitions from this state*/
     uint8_t num_transitions;        /*!< The number of transitions from this state*/

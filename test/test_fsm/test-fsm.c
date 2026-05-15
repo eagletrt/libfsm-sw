@@ -300,7 +300,7 @@ void test_fsm_trigger_event_ok(void) {
     enum FSMReturnCode rc = fsm_api_trigger_event(&handler, STATE_3);
 
     TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_OK, rc, "Expected FSM_RC_OK when parameters are valid");
-    TEST_ASSERT_EQUAL_MESSAGE(STATE_3, handler.current_state, "Expected current state to be updated to the requested state");
+    TEST_ASSERT_EQUAL_MESSAGE(STATE_3, handler.requested_state, "Expected requested state to be updated to the requested state");
 }
 
 void test_fsm_trigger_event_ok_same_state(void) {
@@ -311,7 +311,7 @@ void test_fsm_trigger_event_ok_same_state(void) {
     enum FSMReturnCode rc = fsm_api_trigger_event(&handler, STATE_2);
 
     TEST_ASSERT_EQUAL_MESSAGE(FSM_RC_OK, rc, "Expected FSM_RC_OK when parameters are valid");
-    TEST_ASSERT_EQUAL_MESSAGE(STATE_2, handler.current_state, "Expected current state to remain the same when triggering an event to the same state");
+    TEST_ASSERT_EQUAL_MESSAGE(STATE_2, handler.requested_state, "Expected requested state to remain the same when triggering an event to the same state");
 }
 
 int main() {
