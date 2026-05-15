@@ -24,11 +24,11 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *
 
         const struct State state = state_list[i];
 
-        if ((state.num_transitions != 0 && state.transitions == NULL) /**/
-            || state.function == NULL                                 /**/
-            || state.next_default >= state_count                      /**/
-            || (state.num_transitions == 0 && state.repeat == false)  /**/
-            || state.id >= state_count                                /**/
+        if ((state.num_transitions != 0 && state.transitions == NULL)         /* Check if transitions array is valid*/
+            || state.function == NULL                                         /* Check if state function is valid*/
+            || state.next_default >= state_count                              /* Check if default next state is valid*/
+            || (state.num_transitions == 0 && state.next_default != state.id) /* Check if default next state is the same as current state for non-transition states*/
+            || state.id >= state_count                                        /* Check if state ID is valid*/
             || state.id != i /**/) {
             return FSM_RC_INVALID_MACHINE;
         }
@@ -44,7 +44,8 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *
                 ok_next_default = true;
             }
         }
-        if (!ok_next_default && !state.repeat) {
+        // If the state has transitions the next default state must be one of them, otherwise it must be itself
+        if (!ok_next_default && state.next_default != state.id) {
             return FSM_RC_INVALID_MACHINE;
         }
     }
@@ -68,7 +69,9 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
     const struct State current_state = handler->machine_states[handler->current_state];
 
     // Set next state
-    if (!current_state.repeat && handler->requested_state == handler->current_state) { // What should the behavior be here, should it discard any trigger state made in between the end of the routine and this line or not ??
+    // What should the behavior be here, should it discard any trigger state made in between the end of the routine and this line or not ??
+    // Right now if a trigger event is called in between the end of the routine and this line it will not be overwritten by the default next state.
+    if (handler->requested_state == handler->current_state) {
         handler->requested_state = current_state.next_default;
     }
 

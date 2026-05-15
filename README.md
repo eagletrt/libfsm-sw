@@ -12,7 +12,6 @@ A state contains:
 * A routine function
 * A default next state
 * A transition table
-* A repeat mode
 
 Example:
 
@@ -20,7 +19,6 @@ Example:
 struct State {
     uint32_t id;
     void (*function)(void *data);
-    bool repeat;
     uint32_t next_default;
     struct Transition *transitions;
     uint32_t num_transitions;
@@ -61,12 +59,6 @@ performs the following:
 5. Handles automatic progression for non-repeat states
 
 ---
-
-## Repeat State
-
-A repeating state remains active until an event triggers another transition.
-
-A non-repeating state automatically advances to its `next_default` state after execution.
 
 ## Triggering Events
 
