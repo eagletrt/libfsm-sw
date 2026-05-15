@@ -49,7 +49,7 @@ jobs:
 
       - name: Run Example
         run: |
-          pio ci -l . --exclude=src/test --exclude=src/examples -O "framework=stm32cube" examples/direct-font-rendering.c -b nucleo_h723zg
+          pio ci -l . --exclude=src/test --exclude=src/examples -O "framework=stm32cube" examples/fsm-example.c -b nucleo_h723zg
 
   check:
     name: Static Code Analysis
