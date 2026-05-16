@@ -11,7 +11,7 @@ A state contains:
 * An identifier
 * A routine function
 * A default next state
-* A transition table
+* A transition array
 
 Example:
 
@@ -66,7 +66,7 @@ Events can be triggered to request a state change:
 ```c
 fsm_api_trigger_event(&handler, target_state_id);
 ```
-The library checks if the transition is valid based on the current state and its transition table, then updates the requested state accordingly. Once the current state routine finishes executing, the library will check for any pending requested state changes and update the current state if necessary.
+The library checks if the transition is valid based on the current state and its transition array, then updates the requested state accordingly. Once the current state routine finishes executing, the library will check for any pending requested state changes and update the current state if necessary.
 
 ---
 

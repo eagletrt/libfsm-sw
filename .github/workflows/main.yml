@@ -95,8 +95,8 @@ jobs:
             printf "    clangtidy: --system-headers=false\n" >> platformio.ini
             printf "check_src_filters =\n" >> platformio.ini
             printf "     -<**>\n" >> platformio.ini
-            printf "        +<src/**>\n" >> platformio.ini
-            printf "        +<include/**>\n" >> platformio.ini
+            printf "     +<src/**>\n" >> platformio.ini
+            printf "     +<include/**>\n" >> platformio.ini
             echo "Created platformio.ini"
           fi
           pio check
