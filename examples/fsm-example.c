@@ -116,11 +116,11 @@ int main(void) {
     for (uint32_t i = 0; i <= 8; i++) {
 
         if (i == 3) {
-            fsm_api_trigger_event(&handler, STATE_WORKING);
+            fsm_api_transition_to(&handler, STATE_WORKING);
         }
 
         if (i == 6) {
-            fsm_api_trigger_event(&handler, STATE_FAULT);
+            fsm_api_transition_to(&handler, STATE_FAULT);
         }
 
         printf("Tick %2u  ->  ", i);
@@ -136,11 +136,11 @@ int main(void) {
     for (uint32_t i = 9; i <= 15; i++) {
 
         if (i == 10) {
-            fsm_api_trigger_event(&handler, STATE_WORKING);
+            fsm_api_transition_to(&handler, STATE_WORKING);
         }
 
         if (i == 13) {
-            fsm_api_trigger_event(&handler, STATE_DONE);
+            fsm_api_transition_to(&handler, STATE_DONE);
         }
 
         printf("Tick %2u  ->  ", i);

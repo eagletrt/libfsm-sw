@@ -18,14 +18,16 @@
 /*! 
  * \brief Type definition for a state function 
  *
- * \param data A pointer to user-defined data that can be passed to the state function.
+ * \param data A pointer to user-defined data that can be passed to the state function, it must not contain any pointers to the FSM handler or its members.
  */
 typedef void (*state_function)(void *data);
 
 /*! 
  * \brief Type definition for a transition function
  *
- * \param data A pointer to user-defined data that can be passed to the transition function.
+ * \param data A pointer to user-defined data that can be passed to the transition function, it must not contain any pointers to the FSM handler or its members.
+ * \warning Transition functions must not call fsm_api_* functions.
+ *  They are edge actions; request follow-up transitions from a state function.
  */
 typedef void (*transition_function)(void *data);
 
@@ -58,8 +60,8 @@ struct State {
     state_function function; /*!< The function to be run at the state*/
     uint8_t next_default;    /*!< The default next state, this is the state to go to if no transition is triggered*/
 
-    struct Transition *transitions; /*!< The transitions from this state*/
-    uint8_t num_transitions;        /*!< The number of transitions from this state*/
+    const struct Transition *transitions; /*!< The transitions from this state*/
+    uint8_t num_transitions;              /*!< The number of transitions from this state*/
 };
 
 /*!
@@ -68,9 +70,8 @@ struct State {
  * \warning The machine_states pointer must be statically allocated
  */
 struct FSMHandler {
-
-    uint8_t current_state;   /*!< The current state in which the FSM is*/
-    uint8_t requested_state; /*!< The requested state to go to at the end of the current state*/
+    uint8_t current_state;            /*!< The current state in which the FSM is*/
+    volatile uint8_t requested_state; /*!< The requested state to go to at the end of the current state*/
 
     const struct State *machine_states; /*!< The states of the FSM*/
     uint8_t state_count;                /*!< The number of states in the FSM*/

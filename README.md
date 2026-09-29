@@ -64,7 +64,7 @@ performs the following:
 
 Events can be triggered to request a state change:
 ```c
-fsm_api_trigger_event(&handler, target_state_id);
+fsm_api_transition_to(&handler, target_state_id);
 ```
 The library checks if the transition is valid based on the current state and its transition array, then updates the requested state accordingly. Once the current state routine finishes executing, the library will check for any pending requested state changes and update the current state if necessary.
 

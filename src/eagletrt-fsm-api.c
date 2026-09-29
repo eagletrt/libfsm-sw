@@ -7,6 +7,7 @@
  */
 
 #include "eagletrt-fsm-api.h"
+#include <stdint.h>
 
 enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *state_list, uint8_t state_count, uint8_t initial_state) {
     if (handler == NULL || state_list == NULL) {
@@ -18,6 +19,8 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *
     if (initial_state >= state_count) {
         return FSM_RC_INVALID_STATE;
     }
+
+    memset(handler, 0, sizeof(*handler));
 
     // Validate machine
     for (uint8_t i = 0; i < state_count; i++) {
@@ -62,7 +65,7 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *
 }
 
 enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
-    if (handler == NULL) {
+    if (handler == NULL || handler->machine_states == NULL) {
         return FSM_RC_NULL_POINTER;
     }
 
@@ -71,16 +74,19 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
     // Run state
     current_state.function(data);
 
-    if (handler->requested_state == handler->current_state) {
+    const uint8_t requested_state = handler->requested_state;
+
+    if (requested_state == handler->current_state) {
         return FSM_RC_OK;
     }
 
     for (uint8_t i = 0; i < current_state.num_transitions; i++) {
-        if (current_state.transitions[i].to == handler->requested_state) {
+        if (current_state.transitions[i].to == requested_state) {
             if (current_state.transitions[i].function != NULL) {
                 current_state.transitions[i].function(data);
             }
-            handler->current_state = handler->requested_state;
+
+            handler->current_state = requested_state;
 
             // Arm the default for the state we just entered
             handler->requested_state = handler->machine_states[handler->current_state].next_default;
@@ -92,7 +98,7 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
     return FSM_RC_INVALID_TRANSITION;
 }
 
-enum FSMReturnCode fsm_api_trigger_event(struct FSMHandler *handler, uint8_t state_id) {
+enum FSMReturnCode fsm_api_transition_to(struct FSMHandler *handler, uint8_t state_id) {
     if (handler == NULL) {
         return FSM_RC_NULL_POINTER;
     }

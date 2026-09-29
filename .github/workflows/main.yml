@@ -93,6 +93,8 @@ jobs:
             printf "    clangtidy: --warnings-as-errors=clang-analyzer-*,bugprone-*\n" >> platformio.ini
             printf "    clangtidy: --header-filter=^(?:.*/)?(?:include|src)/.*\.[ch]$\n" >> platformio.ini
             printf "    clangtidy: --system-headers=false\n" >> platformio.ini
+            printf "    clangtidy: --extra-arg=-std=gnu23\n" >> platformio.ini
+            printf "    clangtidy: --extra-arg=-U__cplusplus\n" >> platformio.ini
             printf "check_src_filters =\n" >> platformio.ini
             printf "     -<**>\n" >> platformio.ini
             printf "     +<src/**>\n" >> platformio.ini
