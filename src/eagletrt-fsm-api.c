@@ -54,7 +54,7 @@ enum FSMReturnCode fsm_api_init(struct FSMHandler *handler, const struct State *
     memset(handler, 0, sizeof(*handler));
 
     handler->current_state = initial_state;
-    handler->requested_state = initial_state;
+    handler->requested_state = state_list[initial_state].next_default;
     handler->state_count = state_count;
     handler->machine_states = state_list;
 
@@ -67,13 +67,6 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
     }
 
     const struct State current_state = handler->machine_states[handler->current_state];
-
-    // Set next state
-    // What should the behavior be here, should it discard any trigger state made in between the end of the routine and this line or not ??
-    // Right now if a trigger event is called in between the end of the routine and this line it will not be overwritten by the default next state.
-    if (handler->requested_state == handler->current_state) {
-        handler->requested_state = current_state.next_default;
-    }
 
     // Run state
     current_state.function(data);
@@ -88,6 +81,10 @@ enum FSMReturnCode fsm_api_run_state(struct FSMHandler *handler, void *data) {
                 current_state.transitions[i].function(data);
             }
             handler->current_state = handler->requested_state;
+
+            // Arm the default for the state we just entered
+            handler->requested_state = handler->machine_states[handler->current_state].next_default;
+
             return FSM_RC_OK;
         }
     }
